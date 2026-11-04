@@ -13,8 +13,8 @@
     {# Backend passes crops when seed data lands; defaults keep the form usable. #}
     {% set crop_names = crops | default(['Wheat', 'Rice', 'Cotton', 'Sugarcane', 'Maize', 'Potato']) %}
     <select name="crop" required>
-      {% for cname in crop_names %}
-        <option value="{{ cname.name if cname.name is defined else cname }}">{{ cname.name if cname.name is defined else cname }}</option>
+      {% for cname in crops %}
+        <option value="{{ cname.id }}">{{ cname.name }}</option>
       {% endfor %}
     </select>
   </label>

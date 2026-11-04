@@ -7,3 +7,4 @@ app/static/uploads/*
 !app/static/uploads/.gitkeep
 .DS_Store
 demo/samples/*.jpg
+demo/*.mp4
