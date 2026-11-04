@@ -1,0 +1,15 @@
+# Render.com one-click deploy for CropWise (AI Smart Farming Assistant)
+# HOW TO USE: push this file to GitHub, then on render.com → New → Web Service
+# → connect this repo. Render reads this file and fills everything in.
+services:
+  - type: web
+    name: cropwise
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python data/seed.py
+    startCommand: gunicorn run:app --timeout 120 --workers 2
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.0
