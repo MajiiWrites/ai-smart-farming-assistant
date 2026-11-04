@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %} — Cost Calculation Result{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Cost Calculation Result</h2>
+  <p class="muted">Calculated on:
+    {% if record.created_at %}{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</p>
+</section>
+
+<div class="result-summary">
+  <div class="diag-row">
+    <span class="label">Crop</span>
+    <strong>{{ record.crop }}</strong>
+  </div>
+  <div class="diag-row">
+    <span class="label">Field Area (acres)</span>
+    <span>{{ record.acres }}</span>
+  </div>
+</div>
+
+<h3 class="section-title">Cost Breakdown</h3>
+<div class="line-items">
+  {% for item in line_items | default([]) %}
+  <div class="line-item">
+    <span>{{ item.label }}</span>
+    <span class="amount">Rs {{ (item.amount | default(0)) | round(0) }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="totals">
+  <div class="total-row">
+    <span>Total Cost</span>
+    <strong>Rs {{ (record.total_cost | default(0)) | round(0) }}</strong>
+  </div>
+  <div class="total-row">
+    <span>Cost per Acre</span>
+    <strong>Rs {{ (record.per_acre_cost | default(0)) | round(0) }}</strong>
+  </div>
+  <div class="total-row">
+    <span>Expected Revenue</span>
+    <span>Rs {{ (record.revenue | default(0)) | round(0) }}</span>
+  </div>
+  <div class="total-row highlight{% if (record.profit | default(0)) >= 0 %} good{% else %} bad{% endif %}">
+    <span>Profit / Loss</span>
+    <strong>Rs {{ (record.profit | default(0)) | round(0) }}</strong>
+  </div>
+  <div class="total-row">
+    <span>Break-even Yield</span>
+    <span>{{ (record.breakeven_yield | default(0)) | round(1) }} maunds</span>
+  </div>
+</div>
+
+<div class="actions">
+  <a class="btn btn-primary" href="{{ url_for('costs.index') }}">New Calculation</a>
+  <a class="btn btn-outline" href="{{ url_for('costs.history') }}">Cost History</a>
+</div>
+
+{% endblock %}

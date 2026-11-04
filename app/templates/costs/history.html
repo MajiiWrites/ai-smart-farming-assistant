@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %} — Cost Calculation History{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Cost Calculation History</h2>
+  <a class="btn btn-primary" href="{{ url_for('costs.index') }}">New Calculation</a>
+</section>
+
+{% set rows = records | default([]) %}
+{% if rows %}
+<div class="history-list">
+  {% for r in rows %}
+  <div class="history-item static">
+    <div class="history-info">
+      <strong>{{ r.crop }}</strong>
+      <div class="history-meta">
+        <span class="muted">Field Area (acres): {{ r.acres }}</span>
+        {% if r.created_at %}
+          <span class="muted">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="history-nums">
+      <div class="muted">Total Cost</div>
+      <strong>Rs {{ (r.total_cost | default(0)) | round(0) }}</strong>
+      <div class="{% if (r.profit | default(0)) >= 0 %}good{% else %}bad{% endif %}">
+        Rs {{ (r.profit | default(0)) | round(0) }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No cost calculations yet. Create your first one to get started.</p>
+{% endif %}
+
+{% endblock %}

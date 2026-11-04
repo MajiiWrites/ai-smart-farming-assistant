@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %} — Disease Analysis History{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Disease Analysis History</h2>
+  <a class="btn btn-primary" href="{{ url_for('disease.upload') }}">Analyze Another Leaf</a>
+</section>
+
+{% set rows = analyses | default([]) %}
+{% if rows %}
+<div class="history-list">
+  {% for a in rows %}
+  <a class="history-item" href="{{ url_for('disease.result', analysis_id=a.id) }}">
+    {% if a.image_path %}
+      <img class="thumb" src="{{ url_for('static', filename=a.image_path) }}" alt="">
+    {% endif %}
+    <div class="history-info">
+      <strong>{{ a.diagnosis_en }}</strong>
+      <div class="history-meta">
+{% set sev_labels = {'healthy': 'Healthy', 'mild': 'Mild',
+  'moderate': 'Moderate', 'severe': 'Severe'} %}
+        {% set sev = a.severity | default('healthy') %}
+        <span class="badge sev-{{ sev }}">{{ sev_labels.get(sev, sev) }}</span>
+        {% set conf = a.confidence | default(0) %}
+        <span class="muted">{{ (conf if conf > 1 else conf * 100) | round(0) }}%</span>
+        {% if a.created_at %}
+          <span class="muted">{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <span class="go">›</span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No leaf analyses yet. Upload your first leaf photo to get started.</p>
+{% endif %}
+
+{% endblock %}

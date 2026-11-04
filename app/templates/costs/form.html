@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %} — Fertilizer Cost Calculator{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Fertilizer Cost Calculator</h2>
+  <p class="muted">Enter fertilizer bags per acre and other input costs.</p>
+</section>
+
+<form class="form-card" method="post" action="{{ url_for('costs.calculate') }}">
+  <div class="field-row">
+    <label class="field">
+      <span>Crop</span>
+      {% set crop_names = crops | default(['Wheat', 'Rice', 'Cotton', 'Sugarcane', 'Maize', 'Potato']) %}
+      <select name="crop" required>
+        {% for cname in crop_names %}
+          <option value="{{ cname.name if cname.name is defined else cname }}">{{ cname.name if cname.name is defined else cname }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Field Area (acres)</span>
+      <input type="number" name="acres" min="0.1" step="0.1" required>
+    </label>
+  </div>
+
+  <h3 class="section-title">Fertilizers (bags per acre)</h3>
+  {% for f in fertilizers | default([]) %}
+    <label class="field field-inline">
+      <span>{{ f.name }} <small class="muted">({{ (f.price_pkr_per_bag | default(0)) | round(0) }} Rs/bag)</small></span>
+      <input type="number" name="bags_{{ f.id }}" min="0" step="0.5" value="0">
+    </label>
+  {% endfor %}
+
+  <h3 class="section-title">Other Input Costs (total Rs)</h3>
+  <div class="field-row">
+    <label class="field"><span>Seed</span>
+      <input type="number" name="seed" min="0" step="1" value="0"></label>
+    <label class="field"><span>Pesticide</span>
+      <input type="number" name="pesticide" min="0" step="1" value="0"></label>
+    <label class="field"><span>Labor</span>
+      <input type="number" name="labor" min="0" step="1" value="0"></label>
+    <label class="field"><span>Diesel / Fuel</span>
+      <input type="number" name="diesel" min="0" step="1" value="0"></label>
+    <label class="field"><span>Water / Irrigation</span>
+      <input type="number" name="water" min="0" step="1" value="0"></label>
+  </div>
+
+  <h3 class="section-title">Expected Revenue</h3>
+  <div class="field-row">
+    <label class="field">
+      <span>Expected Yield (maunds)</span>
+      <input type="number" name="expected_yield_maunds" min="0" step="0.1">
+    </label>
+    <label class="field">
+      <span>Expected Price (Rs per maund)</span>
+      <input type="number" name="expected_price_per_maund" min="0" step="1">
+    </label>
+  </div>
+
+  <button class="btn btn-primary btn-block" type="submit">Calculate</button>
+</form>
+
+<div class="actions">
+  <a class="btn btn-outline" href="{{ url_for('costs.fertilizers') }}">Edit Fertilizer Prices</a>
+</div>
+
+{% endblock %}

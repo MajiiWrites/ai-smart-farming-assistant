@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %} — Leaf Disease Detection{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Leaf Disease Detection</h2>
+  <p class="muted">Upload a clear photo of a single leaf for the best results.</p>
+</section>
+
+<form class="form-card" method="post" action="{{ url_for('disease.analyze') }}" enctype="multipart/form-data">
+  <label class="field">
+    <span>Select Crop</span>
+    {# crops come from the backend when available; defaults keep the form
+       usable until the seed data workstream lands. #}
+    {% set crop_options = crops | default([
+      {'id': 1, 'name': 'Wheat'}, {'id': 2, 'name': 'Rice'},
+      {'id': 3, 'name': 'Cotton'}, {'id': 4, 'name': 'Sugarcane'},
+      {'id': 5, 'name': 'Maize'}, {'id': 6, 'name': 'Potato'}]) %}
+    <select name="crop_id">
+      {% for crop in crop_options %}
+        <option value="{{ crop.id }}">{{ crop.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="field">
+    <span>Leaf Photo</span>
+    <input type="file" name="file" accept="image/jpeg,image/png" required>
+  </label>
+  <div class="preview" id="preview" hidden>
+    <img id="previewImg" alt="">
+  </div>
+  <label class="field">
+    <span>Note (optional)</span>
+    <input type="text" name="note" placeholder="e.g. yellowing started 3 days ago on lower leaves">
+  </label>
+  <button class="btn btn-primary btn-block" type="submit">Analyze Leaf</button>
+</form>
+
+<script>
+  // Instant image preview before upload — helps catch wrong photos.
+  document.querySelector('input[name="file"]').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var img = document.getElementById('previewImg');
+    img.src = URL.createObjectURL(f);
+    document.getElementById('preview').hidden = false;
+  });
+</script>
+
+{% endblock %}

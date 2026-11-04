@@ -1,0 +1,11 @@
+# AI Smart Farming Assistant — Python dependencies
+# Loose minimum pins: the student gets working versions via `pip install`,
+# and the project is not locked to exact patch releases.
+Flask>=3.0
+Flask-SQLAlchemy>=3.1
+Flask-Login>=0.6
+opencv-python-headless>=4.8   # headless = no GUI libs needed (server-safe)
+numpy>=1.26
+requests>=2.31                 # weather API calls
+pytest>=8.0                    # test runner (services workstream tests)
+gunicorn>=21.0                 # production server (debug=False)

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %} — Create Account{% endblock %}
+{% block content %}
+
+<section class="auth-wrap">
+  <div class="auth-card">
+    <h2>Create Account</h2>
+    <p class="muted">Register to save your analyses and calculations.</p>
+    <form method="post" action="{{ url_for('auth.register') }}">
+      <label class="field">
+        <span>Username</span>
+        <input type="text" name="username" required autocomplete="username">
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" required autocomplete="email">
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required autocomplete="new-password">
+      </label>
+      <label class="field">
+        <span>Confirm Password</span>
+        <input type="password" name="confirm" required autocomplete="new-password">
+      </label>
+      <button class="btn btn-primary btn-block" type="submit">Register</button>
+    </form>
+    <p class="auth-switch">Already have an account?
+      <a href="{{ url_for('auth.login') }}">Login</a>
+    </p>
+  </div>
+</section>
+
+{% endblock %}

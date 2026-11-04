@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %} — Diagnosis Result{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Diagnosis Result</h2>
+  <p class="muted">Analyzed on:
+    {% if analysis.created_at %}{{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</p>
+</section>
+
+{% set conf = analysis.confidence | default(0) %}
+{% set conf_pct = conf if conf > 1 else conf * 100 %}
+
+<div class="result-grid">
+  <div class="result-img">
+    {% if analysis.image_path %}
+      <img src="{{ url_for('static', filename=analysis.image_path) }}" alt="Diagnosis">
+    {% endif %}
+  </div>
+
+  <div class="result-summary">
+    <div class="diag-row">
+      <span class="label">Diagnosis</span>
+      <strong>{{ analysis.diagnosis_en }}</strong>
+    </div>
+    <div class="diag-row">
+      <span class="label">Severity</span>
+{% set sev_labels = {'healthy': 'Healthy', 'mild': 'Mild',
+  'moderate': 'Moderate', 'severe': 'Severe'} %}
+      {% set sev = analysis.severity | default('healthy') %}
+      <span class="badge sev-{{ sev }}">{{ sev_labels.get(sev, sev) }}</span>
+    </div>
+    <div class="diag-row">
+      <span class="label">Confidence</span>
+      <div class="conf-bar"><div class="conf-fill" style="width: {{ conf_pct | round(0) }}%"></div></div>
+      <span>{{ conf_pct | round(0) }}%</span>
+    </div>
+    <div class="diag-row">
+      <span class="label">Diseased Leaf Area</span>
+      <span>{{ (analysis.diseased_pct | default(0)) | round(1) }}%</span>
+    </div>
+    <div class="diag-row">
+      <span class="label">Lesions Found</span>
+      <span>{{ analysis.lesion_count | default(0) }}</span>
+    </div>
+  </div>
+</div>
+
+{# Advice lists come from the knowledge service via the route; fall back to
+   the stored notes snippet when they are not provided. #}
+{% set symptoms = symptoms | default([]) %}
+{% set prevention = prevention | default([]) %}
+{% set treatment = treatment | default([]) %}
+
+<div class="advice">
+  {% if symptoms %}
+  <div class="advice-card">
+    <h3>🩺 Symptoms Observed</h3>
+    <ul>
+      {% for s in symptoms %}<li>{{ s }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if prevention %}
+  <div class="advice-card">
+    <h3>🛡️ Prevention</h3>
+    <ul>
+      {% for p in prevention %}<li>{{ p }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if treatment %}
+  <div class="advice-card">
+    <h3>💊 Recommended Treatment</h3>
+    <ul>
+      {% for x in treatment %}<li>{{ x }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% elif analysis.notes %}
+  <div class="advice-card">
+    <h3>💊 Recommended Treatment</h3>
+    <p>{{ analysis.notes }}</p>
+  </div>
+  {% endif %}
+</div>
+
+<p class="disclaimer">⚠️ Disclaimer: This is an AI-based estimate for guidance only, not a substitute for professional agronomist advice. If the disease is spreading fast, consult your local agriculture extension officer.</p>
+
+<div class="actions">
+  <a class="btn btn-primary" href="{{ url_for('disease.upload') }}">Analyze Another Leaf</a>
+  <a class="btn btn-outline" href="{{ url_for('disease.history') }}">Disease History</a>
+</div>
+
+{% endblock %}

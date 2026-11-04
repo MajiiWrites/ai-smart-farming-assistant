@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %} — Irrigation Estimate{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Irrigation Estimate</h2>
+  <p class="muted">Estimated on:
+    {% if record.created_at %}{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</p>
+</section>
+
+{% set stage_labels = {
+  'initial': 'Initial',
+  'development': 'Development',
+  'mid': 'Mid-Season',
+  'late': 'Late Season' } %}
+{% set soil_labels = {
+  'sandy': 'Sandy',
+  'loam': 'Loam',
+  'clay': 'Clay' } %}
+{# liters_per_acre is computed here; the model stores only liters_total. #}
+{% set lpa = (record.liters_total | default(0)) / (record.acres | default(1)) if (record.acres | default(0)) else 0 %}
+
+<div class="result-grid">
+  <div class="result-summary">
+    <div class="diag-row">
+      <span class="label">Crop</span>
+      <strong>{{ record.crop }}</strong>
+    </div>
+    <div class="diag-row">
+      <span class="label">Growth Stage</span>
+      <span>{{ stage_labels.get(record.growth_stage, record.growth_stage) }}</span>
+    </div>
+    <div class="diag-row">
+      <span class="label">Soil Type</span>
+      <span>{{ soil_labels.get(record.soil_type, record.soil_type) }}</span>
+    </div>
+    <div class="diag-row">
+      <span class="label">Field Area (acres)</span>
+      <span>{{ record.acres }}</span>
+    </div>
+    <div class="diag-row">
+      <span class="label">City</span>
+      <span>{{ record.city }}</span>
+    </div>
+  </div>
+  <div class="water-results">
+    <div class="water-main">
+      <div class="water-num">{{ (record.liters_total | default(0)) | round(0) }}</div>
+      <div class="water-unit">liters</div>
+      <div class="water-label">Total Water Needed</div>
+    </div>
+    <div class="water-rows">
+      <div class="diag-row">
+        <span class="label">Water per Acre</span>
+        <strong>{{ lpa | round(0) }} liters</strong>
+      </div>
+      <div class="diag-row">
+        <span class="label">Reference Evapotranspiration (ETo)</span>
+        <span>{{ (record.eto | default(0)) | round(2) }} mm/day</span>
+      </div>
+      <div class="diag-row">
+        <span class="label">Crop Water Need (ETc)</span>
+        <span>{{ (record.etc_mm | default(0)) | round(2) }} mm/day</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if record.schedule_text %}
+<div class="advice">
+  <div class="advice-card">
+    <h3>💧 Watering Schedule</h3>
+    <p class="pre-wrap">{{ record.schedule_text }}</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="advice">
+  <div class="advice-card">
+    <h3>📐 Formula Used</h3>
+    <p>{{ formula_note | default('ETc = ETo × Kc, where Kc is the crop coefficient for the selected growth stage (FAO-56 method).', true) }}</p>
+  </div>
+</div>
+
+<div class="actions">
+  <a class="btn btn-primary" href="{{ url_for('irrigation.index') }}">New Estimate</a>
+  <a class="btn btn-outline" href="{{ url_for('main.index') }}">Dashboard</a>
+</div>
+
+{% endblock %}

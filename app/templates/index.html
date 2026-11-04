@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %} — Dashboard{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Grow Smarter, Harvest More</h1>
+    <p>Upload a leaf photo to detect disease, estimate your irrigation needs, and plan fertilizer costs — all in one place.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('disease.upload') }}">Start Disease Check</a>
+  </div>
+  <div class="hero-art" aria-hidden="true">🌾</div>
+</section>
+
+<section class="stats">
+  <div class="stat-card">
+    <div class="stat-num">{{ analyses_count | default(0) }}</div>
+    <div class="stat-label">Leaf Analyses</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ irrigation_count | default(0) }}</div>
+    <div class="stat-label">Irrigation Estimates</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ costs_count | default(0) }}</div>
+    <div class="stat-label">Cost Calculations</div>
+  </div>
+</section>
+
+<section class="cards">
+  <a class="card" href="{{ url_for('disease.upload') }}">
+    <div class="card-icon">🔍</div>
+    <h3>Leaf Disease Detection</h3>
+    <p>Upload a leaf photo and get an instant diagnosis with treatment advice.</p>
+  </a>
+  <a class="card" href="{{ url_for('irrigation.index') }}">
+    <div class="card-icon">💧</div>
+    <h3>Irrigation Estimator</h3>
+    <p>Calculate how much water your crop needs based on weather and soil.</p>
+  </a>
+  <a class="card" href="{{ url_for('costs.index') }}">
+    <div class="card-icon">🧮</div>
+    <h3>Fertilizer Cost Calculator</h3>
+    <p>Plan fertilizer and input costs, and see your expected profit.</p>
+  </a>
+  <a class="card" href="{{ url_for('disease.history') }}">
+    <div class="card-icon">📜</div>
+    <h3>My History</h3>
+    <p>Review your past disease analyses and cost calculations.</p>
+  </a>
+</section>
+
+<section class="how">
+  <h2>How It Works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Upload or Enter</h4>
+      <p>Snap a leaf photo, or enter your crop, soil and field details.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>Get Smart Analysis</h4>
+      <p>The assistant analyzes your input and computes clear results.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Act With Confidence</h4>
+      <p>Follow treatment, watering or cost guidance for a better harvest.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

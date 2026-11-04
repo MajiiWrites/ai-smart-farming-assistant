@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %} — Irrigation Estimator{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Irrigation Estimator</h2>
+  <p class="muted">Enter your field and weather details to estimate water needs.</p>
+</section>
+
+<form class="form-card" method="post" action="{{ url_for('irrigation.estimate') }}">
+  <label class="field">
+    <span>Crop</span>
+    {# Backend passes crops when seed data lands; defaults keep the form usable. #}
+    {% set crop_names = crops | default(['Wheat', 'Rice', 'Cotton', 'Sugarcane', 'Maize', 'Potato']) %}
+    <select name="crop" required>
+      {% for cname in crop_names %}
+        <option value="{{ cname.name if cname.name is defined else cname }}">{{ cname.name if cname.name is defined else cname }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="field">
+    <span>Growth Stage</span>
+    <select name="growth_stage">
+      <option value="initial">Initial</option>
+      <option value="development">Development</option>
+      <option value="mid">Mid-Season</option>
+      <option value="late">Late Season</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Soil Type</span>
+    <select name="soil_type">
+      <option value="sandy">Sandy</option>
+      <option value="loam" selected>Loam</option>
+      <option value="clay">Clay</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Field Area (acres)</span>
+    <input type="number" name="acres" min="0.1" step="0.1" required>
+  </label>
+  <label class="field">
+    <span>City</span>
+    {% set city_names = cities | default(['Lahore', 'Multan', 'Faisalabad', 'Bahawalpur', 'Karachi', 'Peshawar']) %}
+    <select name="city" id="citySelect">
+      <option value="manual">Enter manually</option>
+      {% for c in city_names %}
+        <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <div class="weather-block" id="weatherBlock">
+    <p class="muted">Fill weather values manually, or pick a city to use typical values.</p>
+    <div class="field-row">
+      <label class="field">
+        <span>Max Temperature (°C)</span>
+        <input type="number" name="tmax" step="0.1">
+      </label>
+      <label class="field">
+        <span>Min Temperature (°C)</span>
+        <input type="number" name="tmin" step="0.1">
+      </label>
+      <label class="field">
+        <span>Humidity (%)</span>
+        <input type="number" name="humidity" min="0" max="100" step="1">
+      </label>
+    </div>
+  </div>
+  <button class="btn btn-primary btn-block" type="submit">Estimate Water</button>
+</form>
+
+<script>
+  // Show manual weather inputs only when "manual" city is chosen.
+  var sel = document.getElementById('citySelect');
+  var block = document.getElementById('weatherBlock');
+  function toggleWeather() { block.style.display = (sel.value === 'manual') ? '' : 'none'; }
+  sel.addEventListener('change', toggleWeather);
+  toggleWeather();
+</script>
+
+{% endblock %}

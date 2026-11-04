@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %} — Fertilizer Prices{% endblock %}
+{% block content %}
+
+<section class="page-head">
+  <h2>Fertilizer Prices</h2>
+  <p class="muted">Update the current market price per bag (Rs).</p>
+</section>
+
+<form class="form-card" method="post" action="{{ url_for('costs.fertilizers') }}">
+  <table class="price-table">
+    <thead>
+      <tr>
+        <th>Fertilizer</th>
+        <th>Price per Bag (Rs)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in fertilizers | default([]) %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td><input type="number" name="price_{{ f.id }}" min="0" step="1"
+                   value="{{ f.price_pkr_per_bag | default(0) }}"></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-primary btn-block" type="submit">Save Prices</button>
+</form>
+
+{% endblock %}
